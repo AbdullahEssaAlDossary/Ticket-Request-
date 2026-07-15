@@ -1,614 +1,747 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>طلب سفر - نموذج الموظفين</title>
-    <!-- jsPDF library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <style>
-        /* ====== RESET & BASE ====== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .container {
-            background: #ffffff;
-            max-width: 820px;
-            width: 100%;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            padding: 40px 35px;
-            transition: 0.3s;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #1e3c72;
-            padding-bottom: 20px;
-        }
-        .logo-placeholder {
-            width: 60px;
-            height: 60px;
-            background: #1e3c72;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: bold;
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-        .header h1 {
-            font-size: 26px;
-            color: #1e3c72;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-        }
-        .header h1 small {
-            font-size: 14px;
-            font-weight: 400;
-            color: #4a6fa5;
-            display: block;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px 30px;
-        }
-        .full-width {
-            grid-column: 1 / -1;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .form-group label {
-            font-weight: 600;
-            font-size: 14px;
-            color: #1e3c72;
-        }
-        .form-group label .required {
-            color: #d32f2f;
-            margin-right: 3px;
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 10px 14px;
-            border: 1px solid #d0d7e2;
-            border-radius: 10px;
-            font-size: 15px;
-            background: #f9fafc;
-            transition: 0.2s;
-            width: 100%;
-        }
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #1e3c72;
-            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.15);
-            background: #ffffff;
-        }
-        .form-group textarea {
-            resize: vertical;
-            min-height: 70px;
-        }
-        .radio-group {
-            display: flex;
-            gap: 25px;
-            padding-top: 5px;
-            flex-wrap: wrap;
-        }
-        .radio-group label {
-            font-weight: 400;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-        .radio-group input[type="radio"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #1e3c72;
-        }
-        .hidden {
-            display: none !important;
-        }
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 30px;
-            justify-content: center;
-        }
-        .btn {
-            padding: 14px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #e0e7ef;
-            color: #1e3c72;
-        }
-        .btn-primary {
-            background: #1e3c72;
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background: #14305a;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(30, 60, 114, 0.3);
-        }
-        .btn-secondary {
-            background: #e9ecf0;
-            color: #2c3e50;
-        }
-        .btn-secondary:hover {
-            background: #d5dbe3;
-        }
-        .btn-success {
-            background: #2e7d32;
-            color: #fff;
-        }
-        .btn-success:hover {
-            background: #1f5a22;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
-        }
-        .footer-note {
-            margin-top: 25px;
-            font-size: 13px;
-            color: #7a8b9f;
-            text-align: center;
-            border-top: 1px solid #e9edf2;
-            padding-top: 20px;
-        }
-        /* ====== RESPONSIVE ====== */
-        @media (max-width: 640px) {
-            .container {
-                padding: 25px 15px;
-            }
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 14px;
-            }
-            .header {
-                flex-direction: column;
-                text-align: center;
-            }
-            .header h1 {
-                font-size: 22px;
-            }
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-            .radio-group {
-                gap: 12px;
-            }
-        }
-        /* ====== PRINT ====== */
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-            .container {
-                box-shadow: none;
-                border: 1px solid #ccc;
-            }
-            .btn-group {
-                display: none !important;
-            }
-            .footer-note {
-                display: none;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>طلب سفر - نموذج الموظفين</title>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- pdfmake library (includes Arabic support) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <style>
+    /* ----- RESET & BASE ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px 20px;
+      background: linear-gradient(135deg, #0b2a4a 0%, #1b4f8b 40%, #4a90d9 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ---- خلفية زخرفية (طائرة ورقية) ---- */
+    body::before {
+      content: "\f072";  /* Font Awesome plane icon */
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      font-size: 300px;
+      color: rgba(255, 255, 255, 0.04);
+      top: -30px;
+      right: -80px;
+      transform: rotate(20deg);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: "\f072";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      font-size: 200px;
+      color: rgba(255, 255, 255, 0.03);
+      bottom: -40px;
+      left: -60px;
+      transform: rotate(-30deg);
+      pointer-events: none;
+    }
+
+    /* ---- بطاقة النموذج ---- */
+    .container {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(6px);
+      max-width: 820px;
+      width: 100%;
+      border-radius: 40px;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35), 0 10px 20px rgba(0, 0, 0, 0.1);
+      padding: 40px 35px;
+      position: relative;
+      z-index: 2;
+      transition: 0.3s;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* ---- الرأس مع صورة الطائرة ---- */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid rgba(30, 60, 114, 0.2);
+      padding-bottom: 20px;
+    }
+
+    .plane-icon {
+      font-size: 48px;
+      color: #1e3c72;
+      background: linear-gradient(135deg, #e8edf5, #cbd7e8);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(30, 60, 114, 0.2);
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0b2a4a;
+      letter-spacing: -0.5px;
+    }
+
+    .header h1 small {
+      font-size: 15px;
+      font-weight: 400;
+      color: #4a6fa5;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ---- شبكة الحقول ---- */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 30px;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1e3c72;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .form-group label .required {
+      color: #d32f2f;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 12px 16px;
+      border: 1px solid #dce3ed;
+      border-radius: 14px;
+      font-size: 15px;
+      background: #f8faff;
+      transition: 0.25s;
+      width: 100%;
+      color: #0b2a4a;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #1b4f8b;
+      box-shadow: 0 0 0 4px rgba(27, 79, 139, 0.15);
+      background: #ffffff;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    /* ---- الراديو buttons ---- */
+    .radio-group {
+      display: flex;
+      gap: 30px;
+      padding-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .radio-group label {
+      font-weight: 400;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #1e3c72;
+    }
+
+    .radio-group input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #1b4f8b;
+      margin: 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ---- أزرار ---- */
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 35px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 14px 38px;
+      border: none;
+      border-radius: 60px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #eef2f7;
+      color: #1e3c72;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1b4f8b, #0b2a4a);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(27, 79, 139, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(27, 79, 139, 0.45);
+      background: linear-gradient(135deg, #1f5f9e, #0d345a);
+    }
+
+    .btn-secondary {
+      background: #e9edf4;
+      color: #1e3c72;
+    }
+
+    .btn-secondary:hover {
+      background: #d5dce8;
+      transform: translateY(-2px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #2e7d32, #1b5e20);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(46, 125, 50, 0.45);
+    }
+
+    /* ---- تذييل ---- */
+    .footer-note {
+      margin-top: 25px;
+      font-size: 13px;
+      color: #6a7f9b;
+      text-align: center;
+      border-top: 1px solid #e9edf2;
+      padding-top: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ---- استجابة للجوال ---- */
+    @media (max-width: 640px) {
+      .container {
+        padding: 25px 18px;
+        border-radius: 28px;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .header {
+        flex-direction: column;
+        text-align: center;
+      }
+      .header h1 {
+        font-size: 24px;
+      }
+      .plane-icon {
+        font-size: 34px;
+        width: 60px;
+        height: 60px;
+      }
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .radio-group {
+        gap: 14px;
+      }
+    }
+
+    /* ---- طباعة ---- */
+    @media print {
+      body {
+        background: white;
+        padding: 10px;
+      }
+      .container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        backdrop-filter: none;
+        background: white;
+      }
+      .btn-group {
+        display: none !important;
+      }
+      .footer-note {
+        display: none;
+      }
+      body::before,
+      body::after {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- HEADER -->
-        <div class="header">
-            <div class="logo-placeholder">🚀</div>
-            <h1>
-                طلب سفر
-                <small>رحلة عمل / خروج نهائي</small>
-            </h1>
-        </div>
 
-        <!-- FORM -->
-        <form id="travelForm" autocomplete="off">
-            <div class="form-grid">
-
-                <!-- الاسم -->
-                <div class="form-group">
-                    <label>الاسم الكامل <span class="required">*</span></label>
-                    <input type="text" id="empName" placeholder="أدخل الاسم" required />
-                </div>
-
-                <!-- الرقم الوظيفي -->
-                <div class="form-group">
-                    <label>الرقم الوظيفي <span class="required">*</span></label>
-                    <input type="text" id="empId" placeholder="رقم الموظف" required />
-                </div>
-
-                <!-- رقم الجوال -->
-                <div class="form-group">
-                    <label>رقم الجوال <span class="required">*</span></label>
-                    <input type="tel" id="mobile" placeholder="05xxxxxxxx" required />
-                </div>
-
-                <!-- رقم المشروع -->
-                <div class="form-group">
-                    <label>رقم المشروع <span class="required">*</span></label>
-                    <input type="text" id="projectNo" placeholder="رقم المشروع" required />
-                </div>
-
-                <!-- الوجهة (من) -->
-                <div class="form-group">
-                    <label>المدينة / المطار (من) <span class="required">*</span></label>
-                    <input type="text" id="fromCity" placeholder="مثال: الرياض" required />
-                </div>
-
-                <!-- الوجهة (إلى) -->
-                <div class="form-group">
-                    <label>المدينة / المطار (إلى) <span class="required">*</span></label>
-                    <input type="text" id="toCity" placeholder="مثال: دبي" required />
-                </div>
-
-                <!-- تاريخ المغادرة -->
-                <div class="form-group">
-                    <label>تاريخ المغادرة <span class="required">*</span></label>
-                    <input type="date" id="departDate" required />
-                </div>
-
-                <!-- تاريخ العودة (يظهر فقط عند اختيار Round Trip) -->
-                <div class="form-group" id="returnDateGroup">
-                    <label>تاريخ العودة <span class="required">*</span></label>
-                    <input type="date" id="returnDate" />
-                </div>
-
-                <!-- نوع الرحلة (Business / Final Exit) -->
-                <div class="form-group full-width">
-                    <label>الغرض من السفر <span class="required">*</span></label>
-                    <div class="radio-group" id="purposeGroup">
-                        <label><input type="radio" name="purpose" value="Business Trip" checked /> رحلة عمل</label>
-                        <label><input type="radio" name="purpose" value="Final Exit" /> خروج نهائي</label>
-                    </div>
-                </div>
-
-                <!-- نوع التذكرة (One Way / Round Trip) -->
-                <div class="form-group full-width">
-                    <label>نوع التذكرة <span class="required">*</span></label>
-                    <div class="radio-group" id="tripTypeGroup">
-                        <label><input type="radio" name="tripType" value="One Way" checked /> One Way (ذهاب فقط)</label>
-                        <label><input type="radio" name="tripType" value="Round Trip" /> Round Trip (ذهاب وعودة)</label>
-                    </div>
-                </div>
-
-                <!-- وقت المغادرة المفضل (اختياري) -->
-                <div class="form-group">
-                    <label>وقت المغادرة المفضل (اختياري)</label>
-                    <input type="time" id="prefTime" />
-                </div>
-
-                <!-- شركة الطيران المفضلة (اختياري) -->
-                <div class="form-group">
-                    <label>شركة الطيران المفضلة (اختياري)</label>
-                    <input type="text" id="airline" placeholder="مثال: الخطوط السعودية" />
-                </div>
-
-                <!-- ملاحظات -->
-                <div class="form-group full-width">
-                    <label>ملاحظات إضافية</label>
-                    <textarea id="remarks" placeholder="أي تفاصيل إضافية ..."></textarea>
-                </div>
-
-            </div><!-- end form-grid -->
-
-            <!-- BUTTONS -->
-            <div class="btn-group">
-                <button type="button" class="btn btn-success" id="generateBtn">📄 Generate PDF</button>
-                <button type="reset" class="btn btn-secondary" id="resetBtn">🔄 إعادة تعيين</button>
-            </div>
-        </form>
-
-        <div class="footer-note">
-            بعد الضغط على Generate PDF سيتم تحميل ملف PDF جاهز للإرسال.
-        </div>
+<div class="container">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="plane-icon">
+      <i class="fas fa-plane-departure"></i>
     </div>
+    <h1>
+      طلب سفر
+      <small>رحلة عمل / خروج نهائي</small>
+    </h1>
+  </div>
 
-    <script>
-        (function() {
-            // -------- عناصر DOM ----------
-            const form = document.getElementById('travelForm');
+  <!-- FORM -->
+  <form id="travelForm" autocomplete="off">
+    <div class="form-grid">
 
-            // الحقول
-            const empName = document.getElementById('empName');
-            const empId = document.getElementById('empId');
-            const mobile = document.getElementById('mobile');
-            const projectNo = document.getElementById('projectNo');
-            const fromCity = document.getElementById('fromCity');
-            const toCity = document.getElementById('toCity');
-            const departDate = document.getElementById('departDate');
-            const returnDate = document.getElementById('returnDate');
-            const returnDateGroup = document.getElementById('returnDateGroup');
-            const prefTime = document.getElementById('prefTime');
-            const airline = document.getElementById('airline');
-            const remarks = document.getElementById('remarks');
+      <!-- الاسم -->
+      <div class="form-group">
+        <label>الاسم الكامل <span class="required">*</span></label>
+        <input type="text" id="empName" placeholder="أدخل الاسم" required />
+      </div>
 
-            // الراديو
-            const purposeRadios = document.querySelectorAll('input[name="purpose"]');
-            const tripTypeRadios = document.querySelectorAll('input[name="tripType"]');
+      <!-- الرقم الوظيفي -->
+      <div class="form-group">
+        <label>الرقم الوظيفي <span class="required">*</span></label>
+        <input type="text" id="empId" placeholder="رقم الموظف" required />
+      </div>
 
-            // أزرار
-            const generateBtn = document.getElementById('generateBtn');
-            const resetBtn = document.getElementById('resetBtn');
+      <!-- رقم الجوال -->
+      <div class="form-group">
+        <label>رقم الجوال <span class="required">*</span></label>
+        <input type="tel" id="mobile" placeholder="05xxxxxxxx" required />
+      </div>
 
-            // -------- التحكم في ظهور تاريخ العودة ----------
-            function toggleReturnDate() {
-                let selected = null;
-                for (const radio of tripTypeRadios) {
-                    if (radio.checked) selected = radio.value;
-                }
-                if (selected === 'Round Trip') {
-                    returnDateGroup.classList.remove('hidden');
-                    returnDate.setAttribute('required', 'required');
-                } else {
-                    returnDateGroup.classList.add('hidden');
-                    returnDate.removeAttribute('required');
-                    returnDate.value = ''; // مسح القيمة
-                }
+      <!-- رقم المشروع -->
+      <div class="form-group">
+        <label>رقم المشروع <span class="required">*</span></label>
+        <input type="text" id="projectNo" placeholder="رقم المشروع" required />
+      </div>
+
+      <!-- من -->
+      <div class="form-group">
+        <label>المدينة / المطار (من) <span class="required">*</span></label>
+        <input type="text" id="fromCity" placeholder="مثال: الرياض" required />
+      </div>
+
+      <!-- إلى -->
+      <div class="form-group">
+        <label>المدينة / المطار (إلى) <span class="required">*</span></label>
+        <input type="text" id="toCity" placeholder="مثال: دبي" required />
+      </div>
+
+      <!-- تاريخ المغادرة -->
+      <div class="form-group">
+        <label>تاريخ المغادرة <span class="required">*</span></label>
+        <input type="date" id="departDate" required />
+      </div>
+
+      <!-- تاريخ العودة (يظهر عند Round Trip) -->
+      <div class="form-group" id="returnDateGroup">
+        <label>تاريخ العودة <span class="required">*</span></label>
+        <input type="date" id="returnDate" />
+      </div>
+
+      <!-- الغرض -->
+      <div class="form-group full-width">
+        <label>الغرض من السفر <span class="required">*</span></label>
+        <div class="radio-group" id="purposeGroup">
+          <label><input type="radio" name="purpose" value="رحلة عمل" checked /> رحلة عمل</label>
+          <label><input type="radio" name="purpose" value="خروج نهائي" /> خروج نهائي</label>
+        </div>
+      </div>
+
+      <!-- نوع التذكرة -->
+      <div class="form-group full-width">
+        <label>نوع التذكرة <span class="required">*</span></label>
+        <div class="radio-group" id="tripTypeGroup">
+          <label><input type="radio" name="tripType" value="ذهاب فقط (One Way)" checked /> One Way (ذهاب فقط)</label>
+          <label><input type="radio" name="tripType" value="ذهاب وعودة (Round Trip)" /> Round Trip (ذهاب وعودة)</label>
+        </div>
+      </div>
+
+      <!-- وقت المغادرة المفضل (اختياري) -->
+      <div class="form-group">
+        <label>وقت المغادرة المفضل (اختياري)</label>
+        <input type="time" id="prefTime" />
+      </div>
+
+      <!-- ملاحظات -->
+      <div class="form-group full-width">
+        <label>ملاحظات إضافية</label>
+        <textarea id="remarks" placeholder="أي تفاصيل إضافية ..."></textarea>
+      </div>
+
+    </div><!-- end grid -->
+
+    <!-- BUTTONS -->
+    <div class="btn-group">
+      <button type="button" class="btn btn-success" id="generateBtn">
+        <i class="fas fa-file-pdf"></i> Generate PDF
+      </button>
+      <button type="reset" class="btn btn-secondary" id="resetBtn">
+        <i class="fas fa-undo-alt"></i> إعادة تعيين
+      </button>
+    </div>
+  </form>
+
+  <div class="footer-note">
+    <i class="fas fa-check-circle" style="color:#2e7d32;"></i> بعد الضغط على Generate PDF سيتم تحميل ملف PDF جاهز للإرسال.
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ===== عناصر DOM =====
+    const form = document.getElementById('travelForm');
+
+    const empName = document.getElementById('empName');
+    const empId = document.getElementById('empId');
+    const mobile = document.getElementById('mobile');
+    const projectNo = document.getElementById('projectNo');
+    const fromCity = document.getElementById('fromCity');
+    const toCity = document.getElementById('toCity');
+    const departDate = document.getElementById('departDate');
+    const returnDate = document.getElementById('returnDate');
+    const returnDateGroup = document.getElementById('returnDateGroup');
+    const prefTime = document.getElementById('prefTime');
+    const remarks = document.getElementById('remarks');
+
+    const purposeRadios = document.querySelectorAll('input[name="purpose"]');
+    const tripTypeRadios = document.querySelectorAll('input[name="tripType"]');
+
+    const generateBtn = document.getElementById('generateBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // ===== التحكم في ظهور تاريخ العودة =====
+    function toggleReturnDate() {
+      let selected = null;
+      for (const radio of tripTypeRadios) {
+        if (radio.checked) selected = radio.value;
+      }
+      if (selected === 'ذهاب وعودة (Round Trip)') {
+        returnDateGroup.classList.remove('hidden');
+        returnDate.setAttribute('required', 'required');
+      } else {
+        returnDateGroup.classList.add('hidden');
+        returnDate.removeAttribute('required');
+        returnDate.value = '';
+      }
+    }
+
+    tripTypeRadios.forEach(radio => {
+      radio.addEventListener('change', toggleReturnDate);
+    });
+    toggleReturnDate(); // التشغيل الأولي
+
+    // ===== التحقق من الحقول المطلوبة =====
+    function validateForm() {
+      const requiredFields = [
+        { el: empName, name: 'الاسم' },
+        { el: empId, name: 'الرقم الوظيفي' },
+        { el: mobile, name: 'رقم الجوال' },
+        { el: projectNo, name: 'رقم المشروع' },
+        { el: fromCity, name: 'مدينة المغادرة' },
+        { el: toCity, name: 'مدينة الوصول' },
+        { el: departDate, name: 'تاريخ المغادرة' }
+      ];
+
+      let isRoundTrip = false;
+      for (const radio of tripTypeRadios) {
+        if (radio.checked && radio.value === 'ذهاب وعودة (Round Trip)') isRoundTrip = true;
+      }
+      if (isRoundTrip) {
+        requiredFields.push({ el: returnDate, name: 'تاريخ العودة' });
+      }
+
+      for (const field of requiredFields) {
+        if (!field.el.value.trim()) {
+          alert(`❌ الرجاء تعبئة حقل "${field.name}"`);
+          field.el.focus();
+          return false;
+        }
+      }
+
+      let purposeSelected = false;
+      for (const radio of purposeRadios) {
+        if (radio.checked) purposeSelected = true;
+      }
+      if (!purposeSelected) {
+        alert('❌ الرجاء اختيار الغرض من السفر');
+        return false;
+      }
+
+      let tripSelected = false;
+      for (const radio of tripTypeRadios) {
+        if (radio.checked) tripSelected = true;
+      }
+      if (!tripSelected) {
+        alert('❌ الرجاء اختيار نوع التذكرة');
+        return false;
+      }
+
+      return true;
+    }
+
+    // ===== إنشاء PDF باستخدام pdfmake =====
+    function generatePDF() {
+      if (!validateForm()) return;
+
+      // قراءة القيم
+      const name = empName.value.trim();
+      const id = empId.value.trim();
+      const mobileVal = mobile.value.trim();
+      const project = projectNo.value.trim();
+      const from = fromCity.value.trim();
+      const to = toCity.value.trim();
+      const depart = departDate.value;
+      const returnVal = returnDate.value;
+      const time = prefTime.value || 'غير محدد';
+      const remark = remarks.value.trim() || 'لا يوجد';
+
+      let purpose = '';
+      for (const radio of purposeRadios) {
+        if (radio.checked) purpose = radio.value;
+      }
+      let tripType = '';
+      for (const radio of tripTypeRadios) {
+        if (radio.checked) tripType = radio.value;
+      }
+
+      // تنسيق التاريخ
+      function formatDate(dateStr) {
+        if (!dateStr) return 'غير محدد';
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return dateStr;
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+
+      const departFormatted = formatDate(depart);
+      const returnFormatted = formatDate(returnVal);
+
+      // ===== إعداد بيانات PDF =====
+      const docDefinition = {
+        pageSize: 'A4',
+        pageMargins: [40, 60, 40, 40],
+        defaultStyle: {
+          font: 'HFArial', // سيتم استخدام الخط الافتراضي الذي يدعم العربية
+          fontSize: 12,
+          alignment: 'right'  // محاذاة النص لليمين
+        },
+        content: [
+          // عنوان رئيسي
+          {
+            text: 'طلب سفر - نموذج الموظف',
+            style: 'header',
+            alignment: 'center',
+            fontSize: 22,
+            bold: true,
+            color: '#0b2a4a',
+            margin: [0, 0, 0, 6]
+          },
+          {
+            text: '(رحلة عمل / خروج نهائي)',
+            alignment: 'center',
+            fontSize: 14,
+            color: '#4a6fa5',
+            margin: [0, 0, 0, 20]
+          },
+          // خط فاصل
+          {
+            canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1, color: '#1b4f8b' }],
+            margin: [0, 0, 0, 18]
+          },
+
+          // جدول البيانات (عمودين)
+          {
+            layout: 'lightHorizontalLines', // خطوط أفقية خفيفة
+            table: {
+              widths: ['*', '*'],
+              body: [
+                [
+                  { text: 'الاسم الكامل:', bold: true, color: '#1e3c72', alignment: 'right' },
+                  { text: name, alignment: 'right' }
+                ],
+                [
+                  { text: 'الرقم الوظيفي:', bold: true, color: '#1e3c72', alignment: 'right' },
+                  { text: id, alignment: 'right' }
+                ],
+                [
+                  { text: 'رقم الجوال:', bold: true, color: '#1e3c72', alignment: 'right' },
+                  { text: mobileVal, alignment: 'right' }
+                ],
+                [
+                  { text: 'رقم المشروع:', bold: true, color: '#1e3c72', alignment: 'right' },
+                  { text: project, alignment: 'right' }
+                ],
+                [
+                  { text: 'الغرض:', bold: true, color: '#1e3c72', alignment: 'right' },
+                  { text: purpose, alignment: 'right' }
+                ],
+                [
+                  { text: 'نوع التذكرة:', bold: true, color: '#1e3c72', alignment: 'right' },
+                  { text: tripType, alignment: 'right' }
+                ],
+                [
+                  { text: 'من:', bold: true, color: '#1e3c72', alignment: 'right' },
+                  { text: from, alignment: 'right' }
+                ],
+                [
+                  { text: 'إلى:', bold: true, color: '#1e3c72', alignment: 'right' },
+                  { text: to, alignment: 'right' }
+                ],
+                [
+                  { text: 'تاريخ المغادرة:', bold: true, color: '#1e3c72', alignment: 'right' },
+                  { text: departFormatted, alignment: 'right' }
+                ],
+                ...(tripType === 'ذهاب وعودة (Round Trip)'
+                  ? [[
+                      { text: 'تاريخ العودة:', bold: true, color: '#1e3c72', alignment: 'right' },
+                      { text: returnFormatted, alignment: 'right' }
+                    ]]
+                  : []
+                ),
+                [
+                  { text: 'الوقت المفضل:', bold: true, color: '#1e3c72', alignment: 'right' },
+                  { text: time, alignment: 'right' }
+                ],
+                [
+                  { text: 'الملاحظات:', bold: true, color: '#1e3c72', alignment: 'right' },
+                  { text: remark, alignment: 'right' }
+                ]
+              ]
             }
+          },
 
-            // استمع لتغيير نوع التذكرة
-            tripTypeRadios.forEach(radio => {
-                radio.addEventListener('change', toggleReturnDate);
-            });
+          // سطر فارغ
+          { text: '', margin: [0, 20, 0, 0] },
 
-            // التشغيل الأولي
-            toggleReturnDate();
+          // توقيع الموظف
+          {
+            columns: [
+              { text: 'توقيع الموظف: ________________________', alignment: 'right', fontSize: 12 },
+              { text: `التاريخ: ${new Date().toLocaleDateString('ar-SA')}`, alignment: 'left', fontSize: 12 }
+            ],
+            margin: [0, 10, 0, 0]
+          },
 
-            // -------- التحقق من الحقول المطلوبة قبل إنشاء PDF ----------
-            function validateForm() {
-                // قائمة الحقول المطلوبة (باستثناء returnDate لأنه يتم التحكم فيه)
-                const requiredFields = [
-                    { el: empName, name: 'الاسم' },
-                    { el: empId, name: 'الرقم الوظيفي' },
-                    { el: mobile, name: 'رقم الجوال' },
-                    { el: projectNo, name: 'رقم المشروع' },
-                    { el: fromCity, name: 'مدينة المغادرة' },
-                    { el: toCity, name: 'مدينة الوصول' },
-                    { el: departDate, name: 'تاريخ المغادرة' }
-                ];
+          // قسم الاستخدام الداخلي
+          { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, color: '#aaaaaa' }], margin: [0, 25, 0, 10] },
+          {
+            text: '--- للاستخدام الداخلي (قسم السفر) ---',
+            alignment: 'center',
+            fontSize: 11,
+            color: '#4a6fa5',
+            margin: [0, 0, 0, 12]
+          },
+          {
+            table: {
+              widths: ['*', '*'],
+              body: [
+                [
+                  { text: 'رقم الطلب: _______________', alignment: 'right' },
+                  { text: 'رقم التذكرة: _______________', alignment: 'right' }
+                ],
+                [
+                  { text: 'الحالة:  □ مؤكد   □ معلق   □ ملغي', alignment: 'right' },
+                  { text: 'تم بواسطة: _______________', alignment: 'right' }
+                ],
+                [
+                  { text: 'التاريخ: _______________', alignment: 'right' },
+                  { text: '', alignment: 'right' }
+                ]
+              ]
+            },
+            layout: 'noBorders'
+          }
+        ],
+        styles: {
+          header: {
+            fontSize: 24,
+            bold: true,
+            color: '#0b2a4a'
+          }
+        }
+      };
 
-                // إذا كان Round Trip، نضيف returnDate كحقل مطلوب
-                let isRoundTrip = false;
-                for (const radio of tripTypeRadios) {
-                    if (radio.checked && radio.value === 'Round Trip') isRoundTrip = true;
-                }
-                if (isRoundTrip) {
-                    requiredFields.push({ el: returnDate, name: 'تاريخ العودة' });
-                }
+      // توليد PDF
+      pdfMake.createPdf(docDefinition).download(`طلب_سفر_${name.replace(/\s/g, '_')}.pdf`);
+    }
 
-                // التحقق من أن جميع الحقول المطلوبة مليئة
-                for (const field of requiredFields) {
-                    if (!field.el.value.trim()) {
-                        alert(`❌ الرجاء تعبئة حقل "${field.name}"`);
-                        field.el.focus();
-                        return false;
-                    }
-                }
+    // ===== ربط الأزرار =====
+    generateBtn.addEventListener('click', generatePDF);
 
-                // التحقق من اختيار الغرض ونوع التذكرة (تأكد من وجود اختيار)
-                let purposeSelected = false;
-                for (const radio of purposeRadios) {
-                    if (radio.checked) purposeSelected = true;
-                }
-                if (!purposeSelected) {
-                    alert('❌ الرجاء اختيار الغرض من السفر');
-                    return false;
-                }
+    resetBtn.addEventListener('click', function() {
+      form.reset();
+      toggleReturnDate();
+      // إعادة تعيين الراديوات إلى الخيار الأول
+      purposeRadios[0].checked = true;
+      tripTypeRadios[0].checked = true;
+      toggleReturnDate();
+      // مسح أي قيم مخفية
+      document.querySelectorAll('input, textarea').forEach(el => {
+        if (el.type !== 'radio' && el.type !== 'reset' && el.type !== 'button') {
+          el.value = '';
+        }
+      });
+    });
 
-                let tripSelected = false;
-                for (const radio of tripTypeRadios) {
-                    if (radio.checked) tripSelected = true;
-                }
-                if (!tripSelected) {
-                    alert('❌ الرجاء اختيار نوع التذكرة');
-                    return false;
-                }
+    // منع إرسال النموذج
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+    });
 
-                return true;
-            }
-
-            // -------- إنشاء PDF باستخدام jsPDF ----------
-            function generatePDF() {
-                if (!validateForm()) return;
-
-                // قراءة القيم
-                const name = empName.value.trim();
-                const id = empId.value.trim();
-                const mobileVal = mobile.value.trim();
-                const project = projectNo.value.trim();
-                const from = fromCity.value.trim();
-                const to = toCity.value.trim();
-                const depart = departDate.value;
-                const returnVal = returnDate.value;
-                const time = prefTime.value || 'غير محدد';
-                const airlineVal = airline.value.trim() || 'غير محدد';
-                const remark = remarks.value.trim() || 'لا يوجد';
-
-                // قراءة الراديو
-                let purpose = '';
-                for (const radio of purposeRadios) {
-                    if (radio.checked) purpose = radio.value;
-                }
-                let tripType = '';
-                for (const radio of tripTypeRadios) {
-                    if (radio.checked) tripType = radio.value;
-                }
-
-                // تنسيق التاريخ
-                function formatDate(dateStr) {
-                    if (!dateStr) return 'غير محدد';
-                    const parts = dateStr.split('-');
-                    if (parts.length !== 3) return dateStr;
-                    return `${parts[2]}/${parts[1]}/${parts[0]}`;
-                }
-
-                const departFormatted = formatDate(depart);
-                const returnFormatted = formatDate(returnVal);
-
-                // ----- إنشاء PDF -----
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('p', 'mm', 'a4');
-
-                // إعدادات الصفحة
-                const pageWidth = 210;
-                const margin = 20;
-                let y = margin;
-
-                // عنوان
-                doc.setFontSize(20);
-                doc.setTextColor(30, 60, 114);
-                doc.text('طلب سفر - نموذج الموظف', pageWidth / 2, y, { align: 'center' });
-                y += 10;
-
-                doc.setFontSize(11);
-                doc.setTextColor(100);
-                doc.text(`(رحلة عمل / خروج نهائي)`, pageWidth / 2, y, { align: 'center' });
-                y += 12;
-
-                // خط فاصل
-                doc.setDrawColor(30, 60, 114);
-                doc.line(margin, y, pageWidth - margin, y);
-                y += 10;
-
-                // دالة مساعدة لإضافة سطر
-                function addField(label, value, yPos) {
-                    doc.setFontSize(12);
-                    doc.setTextColor(40);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text(label + ':', margin, yPos);
-                    doc.setFont('helvetica', 'normal');
-                    doc.setTextColor(0);
-                    doc.text(value, margin + 50, yPos);
-                    return yPos + 8;
-                }
-
-                // المعلومات
-                y = addField('الاسم الكامل', name, y);
-                y = addField('الرقم الوظيفي', id, y);
-                y = addField('رقم الجوال', mobileVal, y);
-                y = addField('رقم المشروع', project, y);
-                y = addField('الغرض', purpose, y);
-                y = addField('نوع التذكرة', tripType, y);
-                y = addField('من', from, y);
-                y = addField('إلى', to, y);
-                y = addField('تاريخ المغادرة', departFormatted, y);
-                if (tripType === 'Round Trip') {
-                    y = addField('تاريخ العودة', returnFormatted, y);
-                }
-                y = addField('الوقت المفضل', time, y);
-                y = addField('شركة الطيران', airlineVal, y);
-
-                // الملاحظات (سطر طويل)
-                doc.setFontSize(12);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(40);
-                doc.text('ملاحظات:', margin, y);
-                doc.setFont('helvetica', 'normal');
-                doc.setTextColor(0);
-                // تقسيم الملاحظات الطويلة
-                const remarkLines = doc.splitTextToSize(remark, 130);
-                doc.text(remarkLines, margin + 50, y);
-                y += 8 * remarkLines.length + 6;
-
-                // توقيع الموظف (مكان فارغ)
-                y += 6;
-                doc.setFontSize(12);
-                doc.setTextColor(80);
-                doc.text('توقيع الموظف: ________________________', margin, y);
-                y += 10;
-                doc.text(`التاريخ: ${new Date().toLocaleDateString('ar-SA')}`, margin, y);
-
-                // الجزء الخاص بقسم السفر
-                y += 16;
-                doc.setDrawColor(200);
-                doc.line(margin, y, pageWidth - margin, y);
-                y += 8;
-                doc.setFontSize(11);
-                doc.setTextColor(30, 60, 114);
-                doc.text('--- للاستخدام الداخلي (قسم السفر) ---', margin, y);
-                y += 10;
-                doc.setFontSize(12);
-                doc.setTextColor(0);
-                doc.text('رقم الطلب: _______________', margin, y);
-                y += 8;
-                doc.text('رقم التذكرة: _______________', margin, y);
-                y += 8;
-                doc.text('الحالة:  □ مؤكد   □ معلق   □ ملغي', margin, y);
-                y += 8;
-                doc.text('تم بواسطة: _______________   التاريخ: _______________', margin, y);
-
-                // حفظ الملف
-                doc.save(`طلب_سفر_${name.replace(/\s/g, '_')}.pdf`);
-            }
-
-            // -------- ربط الأزرار ----------
-            generateBtn.addEventListener('click', generatePDF);
-
-            resetBtn.addEventListener('click', function() {
-                // مسح كل الحقول يدوياً لإعادة تعيين الراديوات والحقول المخفية
-                form.reset();
-                // إعادة تعيين حالة ظهور تاريخ العودة
-                toggleReturnDate();
-                // مسح أي حقول مخفية قد تبقى
-                document.querySelectorAll('input, textarea').forEach(el => {
-                    if (el.type !== 'radio' && el.type !== 'reset' && el.type !== 'button') {
-                        el.value = '';
-                    }
-                });
-                // إعادة تعيين الراديوات إلى أول خيار
-                purposeRadios[0].checked = true;
-                tripTypeRadios[0].checked = true;
-                toggleReturnDate();
-            });
-
-            // -------- تحسين تجربة المستخدم: الضغط على Enter لا يرسل النموذج ----------
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-            });
-
-            // -------- جعل تاريخ اليوم هو الحد الأدنى لتاريخ المغادرة (اختياري) ----------
-            const today = new Date().toISOString().split('T')[0];
-            departDate.setAttribute('min', today);
-            returnDate.setAttribute('min', today);
-        })();
-    </script>
+    // جعل اليوم الحالي هو الحد الأدنى للتواريخ
+    const today = new Date().toISOString().split('T')[0];
+    departDate.setAttribute('min', today);
+    returnDate.setAttribute('min', today);
+  })();
+</script>
 </body>
 </html>
