@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>طلب سفر - نموذج الموظفين</title>
+  <title>طلب سفر - Travel Request</title>
   
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -13,9 +13,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
-    /* ============================================================
-       RESET & BASE
-    ============================================================ */
     * {
       margin: 0;
       padding: 0;
@@ -34,7 +31,7 @@
       overflow-x: hidden;
     }
 
-    /* زخرفة الطائرة في الخلفية */
+    /* زخرفة خلفية */
     body::before {
       content: "\f072";
       font-family: "Font Awesome 6 Free";
@@ -61,13 +58,10 @@
       pointer-events: none;
     }
 
-    /* ============================================================
-       البطاقة الرئيسية
-    ============================================================ */
     .container {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(8px);
-      max-width: 820px;
+      max-width: 860px;
       width: 100%;
       border-radius: 40px;
       box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
@@ -77,7 +71,6 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    /* ----- الرأس ----- */
     .header {
       display: flex;
       align-items: center;
@@ -114,7 +107,6 @@
       margin-top: 2px;
     }
 
-    /* ----- الحقول ----- */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -128,25 +120,38 @@
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
     }
 
     .form-group label {
       font-weight: 600;
-      font-size: 14px;
+      font-size: 13px;
       color: #1e3c72;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-group label .ar {
+      color: #0b2a4a;
+    }
+
+    .form-group label .en {
+      font-weight: 400;
+      color: #7a8fa5;
+      font-size: 12px;
     }
 
     .form-group label .required {
       color: #d32f2f;
       font-size: 18px;
+      margin-right: 4px;
     }
 
     .form-group label .optional {
       color: #888;
       font-weight: 400;
-      font-size: 12px;
-      margin-right: 4px;
+      font-size: 11px;
     }
 
     .form-group input,
@@ -176,7 +181,6 @@
       min-height: 70px;
     }
 
-    /* ----- الراديو ----- */
     .radio-group {
       display: flex;
       gap: 30px;
@@ -186,12 +190,17 @@
 
     .radio-group label {
       font-weight: 400;
-      font-size: 15px;
+      font-size: 14px;
       display: flex;
       align-items: center;
       gap: 8px;
       cursor: pointer;
       color: #1e3c72;
+    }
+
+    .radio-group label .en {
+      font-size: 12px;
+      color: #7a8fa5;
     }
 
     .radio-group input[type="radio"] {
@@ -204,7 +213,6 @@
       display: none !important;
     }
 
-    /* ----- الأزرار ----- */
     .btn-group {
       display: flex;
       flex-wrap: wrap;
@@ -278,55 +286,75 @@
       padding-top: 20px;
     }
 
-    /* ============================================================
-       قسم PDF المخفي (للتصدير)
-    ============================================================ */
+    /* ===== قسم الـ PDF المخفي ===== */
     #pdf-content {
       position: absolute;
       left: -9999px;
       top: 0;
       width: 750px;
       background: white;
-      padding: 40px 45px;
+      padding: 35px 40px;
       border-radius: 10px;
       direction: rtl;
       font-family: 'Segoe UI', Tahoma, sans-serif;
       z-index: -1;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
 
-    #pdf-content h2 {
+    #pdf-content .pdf-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border-bottom: 3px solid #1b4f8b;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    #pdf-content .pdf-logo {
+      font-size: 50px;
+      color: #1b4f8b;
+      background: #e8edf5;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #pdf-content .pdf-title {
+      flex: 1;
+    }
+
+    #pdf-content .pdf-title h2 {
       color: #0b2a4a;
       font-size: 24px;
-      border-bottom: 3px solid #1b4f8b;
-      padding-bottom: 12px;
-      margin-bottom: 20px;
-      text-align: center;
+      margin: 0;
     }
 
-    #pdf-content .sub-title {
-      text-align: center;
+    #pdf-content .pdf-title .sub {
       color: #4a6fa5;
-      font-size: 16px;
-      margin-top: -10px;
-      margin-bottom: 25px;
+      font-size: 15px;
     }
 
-    #pdf-content .pdf-row {
+    #pdf-content .pdf-body .pdf-row {
       display: flex;
-      padding: 8px 0;
-      border-bottom: 1px dashed #eee;
+      padding: 7px 0;
+      border-bottom: 1px dashed #e9edf2;
     }
 
-    #pdf-content .pdf-label {
+    #pdf-content .pdf-body .pdf-label {
       font-weight: 700;
       color: #1e3c72;
-      width: 130px;
+      width: 140px;
       flex-shrink: 0;
+      font-size: 14px;
     }
 
-    #pdf-content .pdf-value {
+    #pdf-content .pdf-body .pdf-value {
       color: #0b2a4a;
       flex: 1;
+      font-size: 14px;
     }
 
     #pdf-content .pdf-footer {
@@ -335,23 +363,21 @@
       padding-top: 20px;
       display: flex;
       justify-content: space-between;
-      font-size: 14px;
+      font-size: 13px;
       color: #333;
     }
 
-    #pdf-content .internal-use {
-      margin-top: 25px;
+    #pdf-content .pdf-internal {
+      margin-top: 20px;
       background: #f5f8fc;
-      padding: 15px 20px;
-      border-radius: 10px;
+      padding: 12px 18px;
+      border-radius: 8px;
+      border-right: 4px solid #1b4f8b;
       font-size: 13px;
       color: #1e3c72;
-      border-right: 4px solid #1b4f8b;
     }
 
-    /* ============================================================
-       لوحة التحكم (Admin Modal)
-    ============================================================ */
+    /* ===== لوحة التحكم ===== */
     #adminModal {
       display: none;
       position: fixed;
@@ -461,7 +487,6 @@
       margin-top: 20px;
     }
 
-    /* استجابة الجوال */
     @media (max-width: 640px) {
       .container {
         padding: 25px 18px;
@@ -497,77 +522,130 @@
 </head>
 <body>
 
-<!-- ============================================================
-     النموذج الرئيسي
-============================================================ -->
+<!-- ========================= النموذج الرئيسي ========================= -->
 <div class="container">
   <div class="header">
     <div class="plane-icon"><i class="fas fa-plane-departure"></i></div>
     <h1>
       طلب سفر
-      <small>رحلة عمل / خروج نهائي</small>
+      <small>Travel Request Form</small>
     </h1>
   </div>
 
   <form id="travelForm">
     <div class="form-grid">
+      <!-- الاسم -->
       <div class="form-group">
-        <label>الاسم الكامل <span class="required">*</span></label>
-        <input type="text" id="empName" placeholder="أدخل الاسم" />
+        <label>
+          <span class="ar">الاسم الكامل <span class="required">*</span></span>
+          <span class="en">Full Name</span>
+        </label>
+        <input type="text" id="empName" placeholder="أدخل الاسم / Enter name" />
       </div>
+
+      <!-- الرقم الوظيفي -->
       <div class="form-group">
-        <label>الرقم الوظيفي <span class="required">*</span></label>
-        <input type="text" id="empId" placeholder="رقم الموظف" />
+        <label>
+          <span class="ar">الرقم الوظيفي <span class="required">*</span></span>
+          <span class="en">Employee ID</span>
+        </label>
+        <input type="text" id="empId" placeholder="رقم الموظف / Employee ID" />
       </div>
+
+      <!-- الجوال -->
       <div class="form-group">
-        <label>رقم الجوال <span class="required">*</span></label>
-        <input type="tel" id="mobile" placeholder="05xxxxxxxx" />
+        <label>
+          <span class="ar">رقم الجوال <span class="required">*</span></span>
+          <span class="en">Mobile Number</span>
+        </label>
+        <input type="tel" id="mobile" placeholder="05xxxxxxxx / 05xxxxxxxx" />
       </div>
+
+      <!-- رقم المشروع (اختياري) -->
       <div class="form-group">
-        <label>رقم المشروع <span class="optional">(اختياري)</span></label>
-        <input type="text" id="projectNo" placeholder="رقم المشروع" />
+        <label>
+          <span class="ar">رقم المشروع <span class="optional">(اختياري)</span></span>
+          <span class="en">Project Number (Optional)</span>
+        </label>
+        <input type="text" id="projectNo" placeholder="رقم المشروع / Project No." />
       </div>
+
+      <!-- من -->
       <div class="form-group">
-        <label>من (المدينة) <span class="required">*</span></label>
-        <input type="text" id="fromCity" placeholder="مثال: الرياض" />
+        <label>
+          <span class="ar">من (المدينة) <span class="required">*</span></span>
+          <span class="en">From (City)</span>
+        </label>
+        <input type="text" id="fromCity" placeholder="مثال: الرياض / e.g. Riyadh" />
       </div>
+
+      <!-- إلى -->
       <div class="form-group">
-        <label>إلى (المدينة) <span class="required">*</span></label>
-        <input type="text" id="toCity" placeholder="مثال: دبي" />
+        <label>
+          <span class="ar">إلى (المدينة) <span class="required">*</span></span>
+          <span class="en">To (City)</span>
+        </label>
+        <input type="text" id="toCity" placeholder="مثال: دبي / e.g. Dubai" />
       </div>
+
+      <!-- تاريخ المغادرة -->
       <div class="form-group">
-        <label>تاريخ المغادرة <span class="required">*</span></label>
+        <label>
+          <span class="ar">تاريخ المغادرة <span class="required">*</span></span>
+          <span class="en">Departure Date</span>
+        </label>
         <input type="date" id="departDate" />
       </div>
+
+      <!-- تاريخ العودة (يظهر عند Round Trip) -->
       <div class="form-group" id="returnDateGroup">
-        <label>تاريخ العودة <span class="required">*</span></label>
+        <label>
+          <span class="ar">تاريخ العودة <span class="required">*</span></span>
+          <span class="en">Return Date</span>
+        </label>
         <input type="date" id="returnDate" />
       </div>
 
+      <!-- الغرض -->
       <div class="form-group full-width">
-        <label>الغرض من السفر <span class="required">*</span></label>
+        <label>
+          <span class="ar">الغرض من السفر <span class="required">*</span></span>
+          <span class="en">Travel Purpose</span>
+        </label>
         <div class="radio-group">
-          <label><input type="radio" name="purpose" value="رحلة عمل" checked /> رحلة عمل</label>
-          <label><input type="radio" name="purpose" value="خروج نهائي" /> خروج نهائي</label>
+          <label><input type="radio" name="purpose" value="رحلة عمل (Business Trip)" checked /> رحلة عمل <span class="en">(Business Trip)</span></label>
+          <label><input type="radio" name="purpose" value="خروج نهائي (Final Exit)" /> خروج نهائي <span class="en">(Final Exit)</span></label>
         </div>
       </div>
 
+      <!-- نوع التذكرة -->
       <div class="form-group full-width">
-        <label>نوع التذكرة <span class="required">*</span></label>
+        <label>
+          <span class="ar">نوع التذكرة <span class="required">*</span></span>
+          <span class="en">Ticket Type</span>
+        </label>
         <div class="radio-group">
-          <label><input type="radio" name="tripType" value="ذهاب فقط (One Way)" checked /> One Way (ذهاب فقط)</label>
-          <label><input type="radio" name="tripType" value="ذهاب وعودة (Round Trip)" /> Round Trip (ذهاب وعودة)</label>
+          <label><input type="radio" name="tripType" value="ذهاب فقط (One Way)" checked /> One Way <span class="en">(ذهاب فقط)</span></label>
+          <label><input type="radio" name="tripType" value="ذهاب وعودة (Round Trip)" /> Round Trip <span class="en">(ذهاب وعودة)</span></label>
         </div>
       </div>
 
+      <!-- وقت المغادرة المفضل -->
       <div class="form-group">
-        <label>وقت المغادرة المفضل (اختياري)</label>
+        <label>
+          <span class="ar">وقت المغادرة المفضل <span class="optional">(اختياري)</span></span>
+          <span class="en">Preferred Time (Optional)</span>
+        </label>
         <input type="time" id="prefTime" />
       </div>
 
+      <!-- ملاحظات -->
       <div class="form-group full-width">
-        <label>ملاحظات إضافية</label>
-        <textarea id="remarks" placeholder="أي تفاصيل إضافية ..."></textarea>
+        <label>
+          <span class="ar">ملاحظات إضافية</span>
+          <span class="en">Remarks</span>
+        </label>
+        <textarea id="remarks" placeholder="أي تفاصيل إضافية / Any additional details..."></textarea>
       </div>
     </div>
 
@@ -576,80 +654,76 @@
         <i class="fas fa-file-pdf"></i> Generate PDF
       </button>
       <button type="reset" class="btn btn-secondary" id="resetBtn">
-        <i class="fas fa-undo-alt"></i> إعادة تعيين
+        <i class="fas fa-undo-alt"></i> إعادة تعيين / Reset
       </button>
       <button type="button" class="btn btn-admin" id="adminToggleBtn">
-        <i class="fas fa-user-cog"></i> لوحة التحكم
+        <i class="fas fa-user-cog"></i> لوحة التحكم / Dashboard
       </button>
     </div>
   </form>
 
   <div class="footer-note">
-    <i class="fas fa-check-circle" style="color:#2e7d32;"></i> سيتم تحميل PDF وحفظ الطلب في لوحة التحكم.
+    <i class="fas fa-check-circle" style="color:#2e7d32;"></i> سيتم تحميل PDF وحفظ الطلب تلقائياً.
   </div>
 </div>
 
-<!-- ============================================================
-     قسم PDF المخفي (للتصدير)
-============================================================ -->
+<!-- ========================= قسم الـ PDF المخفي ========================= -->
 <div id="pdf-content">
-  <h2>طلب سفر</h2>
-  <div class="sub-title">(رحلة عمل / خروج نهائي)</div>
-  <div id="pdf-body"></div>
-  <div class="pdf-footer">
-    <span>توقيع الموظف: ________________________</span>
-    <span id="pdf-today-date">التاريخ: --/--/----</span>
+  <div class="pdf-header">
+    <div class="pdf-logo"><i class="fas fa-plane"></i></div>
+    <div class="pdf-title">
+      <h2>طلب سفر / Travel Request</h2>
+      <div class="sub">رحلة عمل / خروج نهائي | Business Trip / Final Exit</div>
+    </div>
   </div>
-  <div class="internal-use">
-    <strong>--- للاستخدام الداخلي (قسم السفر) ---</strong><br />
-    رقم الطلب: _______________ &nbsp;&nbsp;|&nbsp;&nbsp; رقم التذكرة: _______________<br />
-    الحالة: □ مؤكد &nbsp;&nbsp; □ معلق &nbsp;&nbsp; □ ملغي &nbsp;&nbsp;|&nbsp;&nbsp; تم بواسطة: _______________ &nbsp;&nbsp; التاريخ: _______________
+  <div class="pdf-body" id="pdf-body">
+    <!-- سيتم تعبئته بواسطة JavaScript -->
+  </div>
+  <div class="pdf-footer">
+    <span>توقيع الموظف / Employee Signature: ________________________</span>
+    <span id="pdf-today-date">التاريخ / Date: --/--/----</span>
+  </div>
+  <div class="pdf-internal">
+    <strong>--- للاستخدام الداخلي (قسم السفر) / Internal Use Only (Travel Dept.) ---</strong><br />
+    رقم الطلب / Request No.: _______________ &nbsp;&nbsp;|&nbsp;&nbsp; رقم التذكرة / Ticket No.: _______________<br />
+    الحالة / Status: □ مؤكد (Confirmed) &nbsp;&nbsp; □ معلق (Pending) &nbsp;&nbsp; □ ملغي (Cancelled) &nbsp;&nbsp;|&nbsp;&nbsp; تم بواسطة / Handled By: _______________ &nbsp;&nbsp; التاريخ / Date: _______________
   </div>
 </div>
 
-<!-- ============================================================
-     لوحة التحكم (Admin Modal)
-============================================================ -->
+<!-- ========================= لوحة التحكم ========================= -->
 <div id="adminModal">
   <div class="admin-panel">
     <button class="close-btn" id="closeAdminBtn">✕</button>
-    <h2><i class="fas fa-chart-bar" style="margin-left:12px;"></i>لوحة التحكم - جميع الطلبات</h2>
-    <div class="stats" id="statsDisplay">عدد الطلبات: 0</div>
+    <h2><i class="fas fa-chart-bar" style="margin-left:12px;"></i>لوحة التحكم / Dashboard - جميع الطلبات</h2>
+    <div class="stats" id="statsDisplay">عدد الطلبات / Total Requests: 0</div>
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
-            <th>#</th>
-            <th>الاسم</th>
-            <th>الرقم الوظيفي</th>
-            <th>الجوال</th>
-            <th>المشروع</th>
-            <th>من</th>
-            <th>إلى</th>
-            <th>المغادرة</th>
-            <th>العودة</th>
-            <th>الغرض</th>
-            <th>النوع</th>
-            <th>تاريخ التقديم</th>
+            <th>#</th><th>الاسم / Name</th><th>الرقم / ID</th><th>الجوال / Mobile</th>
+            <th>المشروع / Project</th><th>من / From</th><th>إلى / To</th>
+            <th>المغادرة / Depart</th><th>العودة / Return</th><th>الغرض / Purpose</th>
+            <th>النوع / Type</th><th>تاريخ التقديم / Submitted</th>
           </tr>
         </thead>
         <tbody id="adminTableBody">
-          <tr><td colspan="12" class="empty-msg">لا توجد طلبات مسجلة حتى الآن</td></tr>
+          <tr><td colspan="12" class="empty-msg">لا توجد طلبات / No requests yet</td></tr>
         </tbody>
       </table>
     </div>
     <div class="admin-actions">
-      <button class="btn btn-danger" id="clearAllBtn"><i class="fas fa-trash-alt"></i> حذف جميع الطلبات</button>
-      <button class="btn btn-secondary" id="refreshAdminBtn"><i class="fas fa-sync-alt"></i> تحديث</button>
+      <button class="btn btn-danger" id="clearAllBtn"><i class="fas fa-trash-alt"></i> حذف الكل / Clear All</button>
+      <button class="btn btn-secondary" id="refreshAdminBtn"><i class="fas fa-sync-alt"></i> تحديث / Refresh</button>
     </div>
   </div>
 </div>
 
 <script>
   (function() {
-    // ============================================================
-    // 1. عناصر النموذج
-    // ============================================================
+    // ===== كلمة المرور =====
+    const ADMIN_PASSWORD = 'Abdulla94';
+
+    // ===== عناصر النموذج =====
     const empName = document.getElementById('empName');
     const empId = document.getElementById('empId');
     const mobile = document.getElementById('mobile');
@@ -666,13 +740,10 @@
 
     const generateBtn = document.getElementById('generateBtn');
     const resetBtn = document.getElementById('resetBtn');
-
     const pdfBody = document.getElementById('pdf-body');
     const pdfToday = document.getElementById('pdf-today-date');
 
-    // ============================================================
-    // 2. عناصر لوحة التحكم
-    // ============================================================
+    // ===== عناصر لوحة التحكم =====
     const adminModal = document.getElementById('adminModal');
     const adminToggleBtn = document.getElementById('adminToggleBtn');
     const closeAdminBtn = document.getElementById('closeAdminBtn');
@@ -681,9 +752,7 @@
     const clearAllBtn = document.getElementById('clearAllBtn');
     const refreshAdminBtn = document.getElementById('refreshAdminBtn');
 
-    // ============================================================
-    // 3. إظهار/إخفاء تاريخ العودة
-    // ============================================================
+    // ===== إظهار/إخفاء تاريخ العودة =====
     function toggleReturnDate() {
       let selected = '';
       for (const radio of tripTypeRadios) {
@@ -698,37 +767,29 @@
         returnDate.value = '';
       }
     }
-
-    tripTypeRadios.forEach(radio => {
-      radio.addEventListener('change', toggleReturnDate);
-    });
+    tripTypeRadios.forEach(radio => radio.addEventListener('change', toggleReturnDate));
     toggleReturnDate();
 
-    // ============================================================
-    // 4. التحقق من الحقول (رقم المشروع أصبح اختياري)
-    // ============================================================
+    // ===== التحقق (رقم المشروع اختياري) =====
     function validateForm() {
       const fields = [
-        { el: empName, name: 'الاسم' },
-        { el: empId, name: 'الرقم الوظيفي' },
-        { el: mobile, name: 'رقم الجوال' },
-        // تم إزالة رقم المشروع من هنا
-        { el: fromCity, name: 'مدينة المغادرة' },
-        { el: toCity, name: 'مدينة الوصول' },
-        { el: departDate, name: 'تاريخ المغادرة' }
+        { el: empName, name: 'الاسم / Name' },
+        { el: empId, name: 'الرقم الوظيفي / Employee ID' },
+        { el: mobile, name: 'رقم الجوال / Mobile' },
+        { el: fromCity, name: 'من / From' },
+        { el: toCity, name: 'إلى / To' },
+        { el: departDate, name: 'تاريخ المغادرة / Departure Date' }
       ];
-
       let isRoundTrip = false;
       for (const radio of tripTypeRadios) {
         if (radio.checked && radio.value === 'ذهاب وعودة (Round Trip)') isRoundTrip = true;
       }
       if (isRoundTrip) {
-        fields.push({ el: returnDate, name: 'تاريخ العودة' });
+        fields.push({ el: returnDate, name: 'تاريخ العودة / Return Date' });
       }
-
       for (const f of fields) {
         if (!f.el.value.trim()) {
-          alert(`❌ الرجاء تعبئة حقل "${f.name}"`);
+          alert(`❌ الرجاء تعبئة حقل "${f.name}" / Please fill in "${f.name}"`);
           f.el.focus();
           return false;
         }
@@ -736,27 +797,20 @@
       return true;
     }
 
-    // ============================================================
-    // 5. تنسيق التاريخ
-    // ============================================================
     function formatDate(dateStr) {
-      if (!dateStr) return 'غير محدد';
+      if (!dateStr) return '—';
       const parts = dateStr.split('-');
       return `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
 
-    // ============================================================
-    // 6. دوال إدارة التخزين (localStorage)
-    // ============================================================
+    // ===== التخزين =====
     function getRequests() {
       const data = localStorage.getItem('travelRequests');
       return data ? JSON.parse(data) : [];
     }
-
     function saveRequests(requests) {
       localStorage.setItem('travelRequests', JSON.stringify(requests));
     }
-
     function addRequest(requestData) {
       const requests = getRequests();
       requestData.id = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
@@ -765,68 +819,54 @@
       saveRequests(requests);
     }
 
-    // ============================================================
-    // 7. إنشاء PDF وحفظ الطلب
-    // ============================================================
+    // ===== إنشاء PDF =====
     function generatePDF() {
       if (!validateForm()) return;
 
-      // قراءة القيم
       const name = empName.value.trim();
       const id = empId.value.trim();
       const mobileVal = mobile.value.trim();
-      const project = projectNo.value.trim() || '—'; // إذا كان فارغاً نضع شرطة
+      const project = projectNo.value.trim() || '—';
       const from = fromCity.value.trim();
       const to = toCity.value.trim();
       const depart = formatDate(departDate.value);
 
       let purpose = '';
-      for (const radio of purposeRadios) {
-        if (radio.checked) purpose = radio.value;
-      }
+      for (const radio of purposeRadios) if (radio.checked) purpose = radio.value;
       let tripType = '';
-      for (const radio of tripTypeRadios) {
-        if (radio.checked) tripType = radio.value;
-      }
+      for (const radio of tripTypeRadios) if (radio.checked) tripType = radio.value;
 
-      let returnVal = 'غير محدد';
+      let returnVal = '—';
       if (tripType === 'ذهاب وعودة (Round Trip)') {
         returnVal = formatDate(returnDate.value);
       }
+      const time = prefTime.value || '—';
+      const remark = remarks.value.trim() || '—';
 
-      const time = prefTime.value || 'غير محدد';
-      const remark = remarks.value.trim() || 'لا يوجد';
-
-      // ---- تجهيز كائن البيانات لحفظه ----
-      const requestObj = {
-        name, id, mobile: mobileVal, project,
-        from, to, depart, return: returnVal,
-        purpose, tripType, time, remark
-      };
-
-      // ---- حفظ الطلب في localStorage ----
+      // حفظ الطلب
+      const requestObj = { name, id, mobile: mobileVal, project, from, to, depart, return: returnVal, purpose, tripType, time, remark };
       addRequest(requestObj);
 
-      // ---- تعبئة PDF وعرضه ----
+      // تعبئة الـ PDF
       pdfBody.innerHTML = `
-        <div class="pdf-row"><span class="pdf-label">الاسم الكامل:</span><span class="pdf-value">${name}</span></div>
-        <div class="pdf-row"><span class="pdf-label">الرقم الوظيفي:</span><span class="pdf-value">${id}</span></div>
-        <div class="pdf-row"><span class="pdf-label">رقم الجوال:</span><span class="pdf-value">${mobileVal}</span></div>
-        <div class="pdf-row"><span class="pdf-label">رقم المشروع:</span><span class="pdf-value">${project}</span></div>
-        <div class="pdf-row"><span class="pdf-label">الغرض:</span><span class="pdf-value">${purpose}</span></div>
-        <div class="pdf-row"><span class="pdf-label">نوع التذكرة:</span><span class="pdf-value">${tripType}</span></div>
-        <div class="pdf-row"><span class="pdf-label">من:</span><span class="pdf-value">${from}</span></div>
-        <div class="pdf-row"><span class="pdf-label">إلى:</span><span class="pdf-value">${to}</span></div>
-        <div class="pdf-row"><span class="pdf-label">تاريخ المغادرة:</span><span class="pdf-value">${depart}</span></div>
-        ${tripType === 'ذهاب وعودة (Round Trip)' ? `<div class="pdf-row"><span class="pdf-label">تاريخ العودة:</span><span class="pdf-value">${returnVal}</span></div>` : ''}
-        <div class="pdf-row"><span class="pdf-label">الوقت المفضل:</span><span class="pdf-value">${time}</span></div>
-        <div class="pdf-row"><span class="pdf-label">الملاحظات:</span><span class="pdf-value">${remark}</span></div>
+        <div class="pdf-row"><span class="pdf-label">الاسم / Name:</span><span class="pdf-value">${name}</span></div>
+        <div class="pdf-row"><span class="pdf-label">الرقم الوظيفي / Employee ID:</span><span class="pdf-value">${id}</span></div>
+        <div class="pdf-row"><span class="pdf-label">رقم الجوال / Mobile:</span><span class="pdf-value">${mobileVal}</span></div>
+        <div class="pdf-row"><span class="pdf-label">رقم المشروع / Project:</span><span class="pdf-value">${project}</span></div>
+        <div class="pdf-row"><span class="pdf-label">الغرض / Purpose:</span><span class="pdf-value">${purpose}</span></div>
+        <div class="pdf-row"><span class="pdf-label">نوع التذكرة / Ticket Type:</span><span class="pdf-value">${tripType}</span></div>
+        <div class="pdf-row"><span class="pdf-label">من / From:</span><span class="pdf-value">${from}</span></div>
+        <div class="pdf-row"><span class="pdf-label">إلى / To:</span><span class="pdf-value">${to}</span></div>
+        <div class="pdf-row"><span class="pdf-label">تاريخ المغادرة / Departure:</span><span class="pdf-value">${depart}</span></div>
+        ${tripType === 'ذهاب وعودة (Round Trip)' ? `<div class="pdf-row"><span class="pdf-label">تاريخ العودة / Return:</span><span class="pdf-value">${returnVal}</span></div>` : ''}
+        <div class="pdf-row"><span class="pdf-label">الوقت المفضل / Preferred Time:</span><span class="pdf-value">${time}</span></div>
+        <div class="pdf-row"><span class="pdf-label">الملاحظات / Remarks:</span><span class="pdf-value">${remark}</span></div>
       `;
 
       const now = new Date();
-      pdfToday.textContent = `التاريخ: ${now.toLocaleDateString('ar-SA')}`;
+      pdfToday.textContent = `التاريخ / Date: ${now.toLocaleDateString('ar-SA')}`;
 
-      // ---- تحويل إلى PDF ----
+      // تحويل إلى PDF
       const element = document.getElementById('pdf-content');
       html2canvas(element, {
         scale: 2,
@@ -842,55 +882,47 @@
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
         pdf.save(`طلب_سفر_${name.replace(/\s/g, '_')}.pdf`);
-
-        // إعلام المستخدم بأن الطلب تم حفظه
-        alert('✅ تم إنشاء PDF وحفظ الطلب في لوحة التحكم بنجاح!');
+        alert('✅ تم إنشاء PDF وحفظ الطلب بنجاح! / PDF generated and request saved!');
       }).catch(error => {
-        console.error('خطأ:', error);
-        alert('حدث خطأ أثناء إنشاء PDF، يرجى المحاولة مرة أخرى.');
+        console.error(error);
+        alert('حدث خطأ / Error occurred.');
       });
     }
 
-    // ============================================================
-    // 8. لوحة التحكم - عرض جميع الطلبات
-    // ============================================================
+    // ===== لوحة التحكم =====
     function renderAdminTable() {
       const requests = getRequests();
       const tbody = adminTableBody;
-      
       if (requests.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="12" class="empty-msg">📭 لا توجد طلبات مسجلة حتى الآن</td></tr>`;
-        statsDisplay.textContent = 'عدد الطلبات: 0';
+        tbody.innerHTML = `<tr><td colspan="12" class="empty-msg">📭 لا توجد طلبات / No requests</td></tr>`;
+        statsDisplay.textContent = 'عدد الطلبات / Total Requests: 0';
         return;
       }
-
-      statsDisplay.textContent = `عدد الطلبات: ${requests.length}`;
+      statsDisplay.textContent = `عدد الطلبات / Total Requests: ${requests.length}`;
       let html = '';
-      requests.forEach((req, index) => {
-        html += `
-          <tr>
-            <td>${index + 1}</td>
-            <td>${req.name || '—'}</td>
-            <td>${req.id || '—'}</td>
-            <td>${req.mobile || '—'}</td>
-            <td>${req.project || '—'}</td>
-            <td>${req.from || '—'}</td>
-            <td>${req.to || '—'}</td>
-            <td>${req.depart || '—'}</td>
-            <td>${req.return || '—'}</td>
-            <td>${req.purpose || '—'}</td>
-            <td>${req.tripType || '—'}</td>
-            <td style="font-size:12px;">${req.submittedAt || '—'}</td>
-          </tr>
-        `;
+      requests.forEach((req, i) => {
+        html += `<tr>
+          <td>${i+1}</td>
+          <td>${req.name || '—'}</td><td>${req.id || '—'}</td><td>${req.mobile || '—'}</td>
+          <td>${req.project || '—'}</td><td>${req.from || '—'}</td><td>${req.to || '—'}</td>
+          <td>${req.depart || '—'}</td><td>${req.return || '—'}</td>
+          <td>${req.purpose || '—'}</td><td>${req.tripType || '—'}</td>
+          <td style="font-size:12px;">${req.submittedAt || '—'}</td>
+        </tr>`;
       });
       tbody.innerHTML = html;
     }
 
     function openAdminModal() {
-      renderAdminTable();
-      adminModal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
+      const password = prompt('🔐 أدخل كلمة المرور / Enter password:');
+      if (password === null) return;
+      if (password === ADMIN_PASSWORD) {
+        renderAdminTable();
+        adminModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+      } else {
+        alert('❌ كلمة المرور غير صحيحة / Incorrect password.');
+      }
     }
 
     function closeAdminModal() {
@@ -898,64 +930,37 @@
       document.body.style.overflow = 'auto';
     }
 
-    // ============================================================
-    // 9. ربط الأحداث (Event Listeners)
-    // ============================================================
-
-    // زر توليد PDF
+    // ===== ربط الأحداث =====
     generateBtn.addEventListener('click', generatePDF);
-
-    // زر إعادة تعيين
     resetBtn.addEventListener('click', function() {
       document.getElementById('travelForm').reset();
       purposeRadios[0].checked = true;
       tripTypeRadios[0].checked = true;
       toggleReturnDate();
       document.querySelectorAll('input, textarea').forEach(el => {
-        if (el.type !== 'radio' && el.type !== 'reset' && el.type !== 'button') {
-          el.value = '';
-        }
+        if (el.type !== 'radio' && el.type !== 'reset' && el.type !== 'button') el.value = '';
       });
     });
+    document.getElementById('travelForm').addEventListener('submit', e => e.preventDefault());
 
-    // منع إرسال النموذج
-    document.getElementById('travelForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-    });
-
-    // جعل اليوم الحالي حد أدنى للتواريخ
     const today = new Date().toISOString().split('T')[0];
     departDate.setAttribute('min', today);
     returnDate.setAttribute('min', today);
 
-    // ---- لوحة التحكم ----
     adminToggleBtn.addEventListener('click', openAdminModal);
     closeAdminBtn.addEventListener('click', closeAdminModal);
-    window.addEventListener('click', function(e) {
-      if (e.target === adminModal) closeAdminModal();
-    });
-
-    refreshAdminBtn.addEventListener('click', function() {
-      renderAdminTable();
-    });
-
+    window.addEventListener('click', e => { if (e.target === adminModal) closeAdminModal(); });
+    refreshAdminBtn.addEventListener('click', renderAdminTable);
     clearAllBtn.addEventListener('click', function() {
-      if (confirm('⚠️ هل أنت متأكد من حذف جميع الطلبات المسجلة؟')) {
+      if (confirm('⚠️ هل أنت متأكد؟ / Are you sure?')) {
         saveRequests([]);
         renderAdminTable();
-        alert('✅ تم حذف جميع الطلبات.');
+        alert('✅ تم الحذف / Deleted.');
       }
     });
 
-    // ============================================================
-    // 10. تهيئة: في حال فتح الصفحة لأول مرة، التأكد من وجود المفتاح
-    // ============================================================
-    if (!localStorage.getItem('travelRequests')) {
-      saveRequests([]);
-    }
-
+    if (!localStorage.getItem('travelRequests')) saveRequests([]);
   })();
 </script>
-
 </body>
 </html>
