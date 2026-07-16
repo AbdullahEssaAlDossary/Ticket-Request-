@@ -31,7 +31,6 @@
       overflow-x: hidden;
     }
 
-    /* زخرفة خلفية */
     body::before {
       content: "\f072";
       font-family: "Font Awesome 6 Free";
@@ -286,14 +285,14 @@
       padding-top: 20px;
     }
 
-    /* ===== قسم الـ PDF المخفي ===== */
+    /* ===== قسم الـ PDF المخفي (مبسط) ===== */
     #pdf-content {
       position: absolute;
       left: -9999px;
       top: 0;
-      width: 750px;
+      width: 650px;
       background: white;
-      padding: 35px 40px;
+      padding: 30px 35px;
       border-radius: 10px;
       direction: rtl;
       font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -304,77 +303,54 @@
     #pdf-content .pdf-header {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 16px;
       border-bottom: 3px solid #1b4f8b;
-      padding-bottom: 15px;
-      margin-bottom: 20px;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
     }
 
     #pdf-content .pdf-logo {
-      font-size: 50px;
+      font-size: 42px;
       color: #1b4f8b;
       background: #e8edf5;
-      width: 70px;
-      height: 70px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    #pdf-content .pdf-title {
-      flex: 1;
+      flex-shrink: 0;
     }
 
     #pdf-content .pdf-title h2 {
       color: #0b2a4a;
-      font-size: 24px;
+      font-size: 22px;
       margin: 0;
     }
 
     #pdf-content .pdf-title .sub {
       color: #4a6fa5;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     #pdf-content .pdf-body .pdf-row {
       display: flex;
-      padding: 7px 0;
-      border-bottom: 1px dashed #e9edf2;
+      padding: 6px 0;
+      border-bottom: 1px dashed #eef2f7;
     }
 
     #pdf-content .pdf-body .pdf-label {
       font-weight: 700;
       color: #1e3c72;
-      width: 140px;
+      width: 130px;
       flex-shrink: 0;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     #pdf-content .pdf-body .pdf-value {
       color: #0b2a4a;
       flex: 1;
-      font-size: 14px;
-    }
-
-    #pdf-content .pdf-footer {
-      margin-top: 30px;
-      border-top: 2px solid #1b4f8b;
-      padding-top: 20px;
-      display: flex;
-      justify-content: space-between;
       font-size: 13px;
-      color: #333;
-    }
-
-    #pdf-content .pdf-internal {
-      margin-top: 20px;
-      background: #f5f8fc;
-      padding: 12px 18px;
-      border-radius: 8px;
-      border-right: 4px solid #1b4f8b;
-      font-size: 13px;
-      color: #1e3c72;
     }
 
     /* ===== لوحة التحكم ===== */
@@ -667,7 +643,7 @@
   </div>
 </div>
 
-<!-- ========================= قسم الـ PDF المخفي ========================= -->
+<!-- ========================= قسم الـ PDF المخفي (مبسط) ========================= -->
 <div id="pdf-content">
   <div class="pdf-header">
     <div class="pdf-logo"><i class="fas fa-plane"></i></div>
@@ -677,16 +653,7 @@
     </div>
   </div>
   <div class="pdf-body" id="pdf-body">
-    <!-- سيتم تعبئته بواسطة JavaScript -->
-  </div>
-  <div class="pdf-footer">
-    <span>توقيع الموظف / Employee Signature: ________________________</span>
-    <span id="pdf-today-date">التاريخ / Date: --/--/----</span>
-  </div>
-  <div class="pdf-internal">
-    <strong>--- للاستخدام الداخلي (قسم السفر) / Internal Use Only (Travel Dept.) ---</strong><br />
-    رقم الطلب / Request No.: _______________ &nbsp;&nbsp;|&nbsp;&nbsp; رقم التذكرة / Ticket No.: _______________<br />
-    الحالة / Status: □ مؤكد (Confirmed) &nbsp;&nbsp; □ معلق (Pending) &nbsp;&nbsp; □ ملغي (Cancelled) &nbsp;&nbsp;|&nbsp;&nbsp; تم بواسطة / Handled By: _______________ &nbsp;&nbsp; التاريخ / Date: _______________
+    <!-- سيتم تعبئته بواسطة JavaScript (فقط الحقول المملوءة) -->
   </div>
 </div>
 
@@ -721,7 +688,7 @@
 <script>
   (function() {
     // ===== كلمة المرور =====
-    const ADMIN_PASSWORD = 'Abdulla94';
+    const ADMIN_PASSWORD = 'admin2025';
 
     // ===== عناصر النموذج =====
     const empName = document.getElementById('empName');
@@ -741,7 +708,6 @@
     const generateBtn = document.getElementById('generateBtn');
     const resetBtn = document.getElementById('resetBtn');
     const pdfBody = document.getElementById('pdf-body');
-    const pdfToday = document.getElementById('pdf-today-date');
 
     // ===== عناصر لوحة التحكم =====
     const adminModal = document.getElementById('adminModal');
@@ -798,7 +764,7 @@
     }
 
     function formatDate(dateStr) {
-      if (!dateStr) return '—';
+      if (!dateStr) return '';
       const parts = dateStr.split('-');
       return `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
@@ -819,14 +785,65 @@
       saveRequests(requests);
     }
 
+    // ===== بناء الـ PDF (فقط الحقول المملوءة) =====
+    function buildPDFBody() {
+      // جمع كل الحقول مع تسمياتها وقيمها
+      const fields = [
+        { label: 'الاسم / Name', value: empName.value.trim() },
+        { label: 'الرقم الوظيفي / Employee ID', value: empId.value.trim() },
+        { label: 'رقم الجوال / Mobile', value: mobile.value.trim() },
+        { label: 'رقم المشروع / Project', value: projectNo.value.trim() },
+        { label: 'من / From', value: fromCity.value.trim() },
+        { label: 'إلى / To', value: toCity.value.trim() },
+        { label: 'تاريخ المغادرة / Departure', value: formatDate(departDate.value) },
+      ];
+
+      // الغرض
+      let purpose = '';
+      for (const radio of purposeRadios) if (radio.checked) purpose = radio.value;
+      fields.push({ label: 'الغرض / Purpose', value: purpose });
+
+      // نوع التذكرة
+      let tripType = '';
+      for (const radio of tripTypeRadios) if (radio.checked) tripType = radio.value;
+      fields.push({ label: 'نوع التذكرة / Ticket Type', value: tripType });
+
+      // تاريخ العودة (إذا كان موجوداً)
+      if (tripType === 'ذهاب وعودة (Round Trip)') {
+        const returnVal = formatDate(returnDate.value);
+        fields.push({ label: 'تاريخ العودة / Return', value: returnVal });
+      }
+
+      // وقت المغادرة
+      fields.push({ label: 'الوقت المفضل / Preferred Time', value: prefTime.value.trim() });
+
+      // ملاحظات
+      fields.push({ label: 'الملاحظات / Remarks', value: remarks.value.trim() });
+
+      // بناء HTML فقط للحقول التي لها قيمة (غير فارغة)
+      let html = '';
+      for (const f of fields) {
+        if (f.value && f.value.length > 0) {
+          html += `
+            <div class="pdf-row">
+              <span class="pdf-label">${f.label}:</span>
+              <span class="pdf-value">${f.value}</span>
+            </div>
+          `;
+        }
+      }
+      return html;
+    }
+
     // ===== إنشاء PDF =====
     function generatePDF() {
       if (!validateForm()) return;
 
+      // قراءة القيم لحفظها
       const name = empName.value.trim();
       const id = empId.value.trim();
       const mobileVal = mobile.value.trim();
-      const project = projectNo.value.trim() || '—';
+      const project = projectNo.value.trim();
       const from = fromCity.value.trim();
       const to = toCity.value.trim();
       const depart = formatDate(departDate.value);
@@ -836,35 +853,19 @@
       let tripType = '';
       for (const radio of tripTypeRadios) if (radio.checked) tripType = radio.value;
 
-      let returnVal = '—';
+      let returnVal = '';
       if (tripType === 'ذهاب وعودة (Round Trip)') {
         returnVal = formatDate(returnDate.value);
       }
-      const time = prefTime.value || '—';
-      const remark = remarks.value.trim() || '—';
+      const time = prefTime.value.trim();
+      const remark = remarks.value.trim();
 
       // حفظ الطلب
       const requestObj = { name, id, mobile: mobileVal, project, from, to, depart, return: returnVal, purpose, tripType, time, remark };
       addRequest(requestObj);
 
-      // تعبئة الـ PDF
-      pdfBody.innerHTML = `
-        <div class="pdf-row"><span class="pdf-label">الاسم / Name:</span><span class="pdf-value">${name}</span></div>
-        <div class="pdf-row"><span class="pdf-label">الرقم الوظيفي / Employee ID:</span><span class="pdf-value">${id}</span></div>
-        <div class="pdf-row"><span class="pdf-label">رقم الجوال / Mobile:</span><span class="pdf-value">${mobileVal}</span></div>
-        <div class="pdf-row"><span class="pdf-label">رقم المشروع / Project:</span><span class="pdf-value">${project}</span></div>
-        <div class="pdf-row"><span class="pdf-label">الغرض / Purpose:</span><span class="pdf-value">${purpose}</span></div>
-        <div class="pdf-row"><span class="pdf-label">نوع التذكرة / Ticket Type:</span><span class="pdf-value">${tripType}</span></div>
-        <div class="pdf-row"><span class="pdf-label">من / From:</span><span class="pdf-value">${from}</span></div>
-        <div class="pdf-row"><span class="pdf-label">إلى / To:</span><span class="pdf-value">${to}</span></div>
-        <div class="pdf-row"><span class="pdf-label">تاريخ المغادرة / Departure:</span><span class="pdf-value">${depart}</span></div>
-        ${tripType === 'ذهاب وعودة (Round Trip)' ? `<div class="pdf-row"><span class="pdf-label">تاريخ العودة / Return:</span><span class="pdf-value">${returnVal}</span></div>` : ''}
-        <div class="pdf-row"><span class="pdf-label">الوقت المفضل / Preferred Time:</span><span class="pdf-value">${time}</span></div>
-        <div class="pdf-row"><span class="pdf-label">الملاحظات / Remarks:</span><span class="pdf-value">${remark}</span></div>
-      `;
-
-      const now = new Date();
-      pdfToday.textContent = `التاريخ / Date: ${now.toLocaleDateString('ar-SA')}`;
+      // تعبئة الـ PDF بالحقول المملوءة فقط
+      pdfBody.innerHTML = buildPDFBody();
 
       // تحويل إلى PDF
       const element = document.getElementById('pdf-content');
